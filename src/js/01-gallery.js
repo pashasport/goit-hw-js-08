@@ -1,50 +1,27 @@
 // Add imports above this line
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import SimpleLightbox from 'simplelightbox';
 import { galleryItems } from './gallery-items';
 // Change code below this line
-const galleryImg = document.querySelector('.gallery');
-const itemsMarkup = createImgGalleryMarkup(galleryItems);
-galleryImg.insertAdjacentHTML('beforeend', itemsMarkup);
-galleryImg.addEventListener('click', onImgClick);
+const galleryList = document.querySelector('.gallery');
 
-function createImgGalleryMarkup(el) {
-  return el
-    .map(({ preview, original, description }) => {
+const markupGallery = createGalleryMarkup(galleryItems);
+
+galleryList.insertAdjacentHTML('beforeend', markupGallery);
+galleryList.style.listStyle = 'none';
+function createGalleryMarkup(items) {
+  return items
+    .map(({ preview, description, original }) => {
       return `<li class="gallery__item">
-  <a class="gallery__link" href="large-image.jpg">
-    <img
-      class="gallery__image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-    />
-  </a>
+   <a class="gallery__link" href="${original}">
+      <img class="gallery__image" src="${preview}" alt="${description}" />
+   </a>
 </li>`;
     })
     .join('');
 }
 
-function onImgClick(e) {
-  e.preventDefault();
-
-  if (!e.target.classList.contains('gallery__image')) {
-    return;
-  }
-
-  const imgModalCreate = basicLightbox.create(
-    `
-		<img src="${e.target.dataset.source}">
-	`,
-    {
-      onShow: () => window.addEventListener('keydown', onEscKeyClose),
-      onClose: () => window.removeEventListener('keydown', onEscKeyClose),
-    }
-  );
-  imgModalCreate.show();
-
-  function onEscKeyClose(e) {
-    if (e.code === 'Escape') {
-      imgModalCreate.close();
-    }
-  }
-}
+let lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionsDelay: 250,
+});
